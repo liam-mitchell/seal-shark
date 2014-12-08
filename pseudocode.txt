@@ -1,0 +1,57 @@
+character
+  moving
+  jumping
+  shooting
+  biting
+
+platforms
+  collision
+    enemies
+    ground
+    shooty-uppy things
+  moving
+  breakables
+
+background
+  changing levels
+  scrolling with cat
+  following player
+
+enemies
+  chester
+  nano-meleon
+  baby-meleons
+  nano-ants
+  nano-queen
+
+Two lists:
+  Colliders
+  Entities
+
+Main game loop:
+  process_input()
+  update_player()
+  update_enemies()
+  update_physics()
+  render()
+
+update_physics():
+  for each entity:
+    step()
+    collide()
+
+update_player():
+  update_cooldowns()
+  update_direction()
+  if shooting and can_shoot:
+    shoot()
+  else if biting and can_bite:
+    bite()
+
+shoot():
+  create_bullet()
+  shooting_cooldown = cd
+
+bite():
+  create_teeth()
+  biting_cooldown = cd
