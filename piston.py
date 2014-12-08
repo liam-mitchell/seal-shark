@@ -4,9 +4,9 @@ from animation import Animation
 from entity import Entity
 
 class Piston(Entity):
-    PISTON_DIST = 3 * 26
+    PISTON_DIST = 5 * 26
 
-    PISTON_SPEED = 100
+    PISTON_SPEED = 150
 
     def __init__(self, image_path, position):
         self.type = Entity.TYPE_OBJECT_DYNAMIC
@@ -50,7 +50,7 @@ class Piston(Entity):
                                   5 * 26,
                                   1 * 26)
         self.bottom = pygame.Rect(self.position.x + 26,
-                                  self.position.y + 10 * 26,
+                                  self.position.y + 9 * 26,
                                   4 * 26,
                                   26)
         self.collider_list = [self.top, self.second, self.bottom]

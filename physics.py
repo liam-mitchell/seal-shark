@@ -16,8 +16,7 @@ class PhysicsEngine(object):
             self.step(e, dt, entities)
 
     def add_gravity(self, entity, dt):
-        if entity.type == Entity.TYPE_PLAYER \
-           or entity.type == Entity.TYPE_ENEMY_DYNAMIC:
+        if entity.type == Entity.TYPE_PLAYER:
             entity.velocity.y += self.ACCEL_GRAVITY * dt / 1000
 
     def step(self, entity, dt, entities):

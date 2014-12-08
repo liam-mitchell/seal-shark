@@ -9,7 +9,7 @@ class RotatorBlock(Block):
     VEL_LEFT = pygame.math.Vector2(-1, 0)
     VEL_DOWN = pygame.math.Vector2(0, 1)
 
-    TIME_ROTATION = 50
+    TIME_ROTATION = 25
 
     def __init__(self, image_path, position, center, collider=None):
         Block.__init__(self, image_path, position, collider)

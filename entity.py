@@ -8,6 +8,7 @@ class Entity(object):
     TYPE_ENEMY_DYNAMIC = 4
     TYPE_PLAYER_MELEE = 5
     TYPE_PLAYER_RANGED = 6
+    TYPE_POTION = 7
 
     # Parent class of all entities in the game
     #
@@ -52,12 +53,6 @@ class Entity(object):
 
     def match(self, other, axis):
         if axis == 'y':
-            print("self y: " + str(self.position.y)
-                  + " other y: " + str(other.position.y))
-##            if self.position.y < other.position.y:
-##                self.match_bottom(other)
-##            else:
-##                self.match_top(other)
             if self.velocity.y < 0:
                 self.match_top(other)
             else:
@@ -72,45 +67,33 @@ class Entity(object):
 
     def resolve_collision(self, other, axis, dt):
         if axis == 'y':
+            self.position.y -= self.velocity.y * dt / 1000
             if self.type == Entity.TYPE_PLAYER \
                and self.velocity.y > 0:
                 self.can_jump = True
-            self.position.y -= self.velocity.y * dt / 1000
+                self.match_bottom(other)
             self.velocity.y = 0
         else:
             self.position.x -= self.velocity.x * dt / 1000
             self.velocity.x = 0
 
     def match_top(self, other):
-        print("matching top")
         self.position.y = other.position.y + other.animation.current_frame().get_height()
         self.reset_collider()
-        print("self position now (" +
-              str(self.position.x) + ", " +
-              str(self.position.y) + ")")
 
     def match_bottom(self, other):
-        print("matching bottom")
         self.position.y = other.position.y - self.animation.current_frame().get_height()
         if self.type == Entity.TYPE_PLAYER:
             self.can_jump = True
         self.reset_collider()
 
     def match_left(self, other):
-        print("matching left")
         self.position.x = other.position.x - self.animation.current_frame().get_width()
-        self.reset_collider()
-        print("self position now (" +
-              str(self.position.x) + ", " +
-              str(self.position.y) + ")")        
+        self.reset_collider()       
 
     def match_right(self, other):
-        print("matching right")
         self.position.x = other.position.x + other.animation.current_frame().get_width()
         self.reset_collider()
-        print("self position now (" +
-              str(self.position.x) + ", " +
-              str(self.position.y) + ")")
 
     def colliders(self):
         return [self.collider]

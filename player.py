@@ -3,6 +3,7 @@ import pygame
 
 from animation import Animation
 from entity import Entity
+from newlevel import NewLevelException
 from physics import PhysicsEngine
 
 class Player(Entity):
@@ -42,6 +43,7 @@ class Player(Entity):
         self.can_jump = False
         self.jumping = False
         self.dead = False
+        self.stunned = 10
         self.VEL_JUMP = math.sqrt(2 * Player.HEIGHT_JUMP
                                   * PhysicsEngine.ACCEL_GRAVITY)
         self.animation = Player.ANIM_RIGHT
@@ -61,13 +63,21 @@ class Player(Entity):
                     self.velocity.y = -self.velocity.y
                 else:
                     self.velocity.x = -self.velocity.x
+                self.stunned = 10
 
             if self.health < 1:
                 self.die()
+        elif other.type == Entity.TYPE_POTION and other.active:
+            other.active = False
+            raise NewLevelException()
         else:
             self.resolve_collision(other, axis, dt)
             self.reset_collider()
 
+    def take_damage(self, damage, source):
+        self.health -= damage
+        if self.health < 1:
+            self.die()
 
     def die(self):
         self.animation = Player.ANIM_DEAD
@@ -75,6 +85,10 @@ class Player(Entity):
 
     def update_logic(self, input_m, entities, dt):
         if self.dead:
+            return
+
+        if self.stunned > 0:
+            self.stunned -= 1
             return
 
         if self.jumping:
@@ -111,7 +125,7 @@ class Player(Entity):
         if input_m.x and self.teeth_cooldown <= 0:
             teeth_position = pygame.math.Vector2(self.position.x, self.position.y + 26)
             if self.animation == Player.ANIM_RIGHT:
-                teeth_position.x += 4 * 26
+                teeth_position.x += 3 * 26
             else:
                 teeth_position.x -= 26
         
@@ -124,15 +138,12 @@ class Player(Entity):
             self.teeth_cooldown -= dt
 
     def reset_collider(self):
-        if self.animation == Player.ANIM_LEFT:
-            dx = 0
-        else:
-            dx = 26
+        dx = 19
         dy = 26
 
         self.collider = pygame.Rect(self.position.x + dx,
                                     self.position.y + dy,
-                                    self.animation.current_frame().get_width() - 26,
+                                    self.animation.current_frame().get_width() - 39,
                                     self.animation.current_frame().get_height() - 26)
 
 class PlayerBullet(Entity):

@@ -18,3 +18,15 @@ class Block(Entity):
 
     def update_logic(self, input_m, entities, dt):
         pass
+
+class BreakableBlock(Block):
+    def __init__(self, image_path, position):
+        Block.__init__(self, image_path, position)
+        self.dead = False
+
+    def take_damage(self, damage, source):
+        self.dead = True
+
+    def update_logic(self, input_m, entities, dt):
+        if self.dead:
+            entities.remove(self)
