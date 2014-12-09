@@ -12,24 +12,41 @@ class Player(Entity):
     VEL_LEFTRIGHT = 200
     VEL_KNOCKBACK = VEL_LEFTRIGHT
     VEL_BULLET = 500
+    VEL_JUMP = math.sqrt(2 * HEIGHT_JUMP * PhysicsEngine.ACCEL_GRAVITY)
 
-    CD_TEETH = 1000
-    CD_SHOT = 1000
+    CD_TEETH = 250
+    CD_SHOT = 250
 
     DIST_KNOCKBACK = VEL_KNOCKBACK / 10
 
-    ANIM_FRAMELEN_WALK = 500
+    ANIM_FRAMELEN_WALK = 100
 
     ANIM_RIGHT = Animation([
-        pygame.image.load("mock/shark-right.png"),
-        pygame.image.load("mock/shark-right-2.png")
+        pygame.image.load("mock/shark-right-1.png"),
+        pygame.image.load("mock/shark-right-2.png"),
+        pygame.image.load("mock/shark-right-3.png"),
+        pygame.image.load("mock/shark-right-4.png"),
+        pygame.image.load("mock/shark-right-5.png"),
+        pygame.image.load("mock/shark-right-6.png"),
         ],
                            ANIM_FRAMELEN_WALK)
     ANIM_LEFT = Animation([
-        pygame.image.load("mock/shark-left.png"),
-        pygame.image.load("mock/shark-left-2.png")
+        pygame.image.load("mock/shark-left-1.png"),
+        pygame.image.load("mock/shark-left-2.png"),
+        pygame.image.load("mock/shark-left-3.png"),
+        pygame.image.load("mock/shark-left-4.png"),
+        pygame.image.load("mock/shark-left-5.png"),
+        pygame.image.load("mock/shark-left-6.png")
         ],
                            ANIM_FRAMELEN_WALK)
+    ANIM_IDLE_RIGHT = Animation([
+        pygame.image.load("mock/shark-right-1.png")
+        ],
+                                0)
+    ANIM_IDLE_LEFT = Animation([
+        pygame.image.load("mock/shark-left-1.png")
+        ],
+                               0)
     ANIM_DEAD = Animation([
         pygame.image.load("mock/shark-dead.png")
         ],
@@ -44,8 +61,6 @@ class Player(Entity):
         self.jumping = False
         self.dead = False
         self.stunned = 10
-        self.VEL_JUMP = math.sqrt(2 * Player.HEIGHT_JUMP
-                                  * PhysicsEngine.ACCEL_GRAVITY)
         self.animation = Player.ANIM_RIGHT
         self.reset_collider()
 
@@ -54,9 +69,10 @@ class Player(Entity):
 
     def collide(self, other, axis, dt):
         if other.type == Entity.TYPE_ENEMY_STATIC \
-           or other.type == Entity.TYPE_ENEMY_DYNAMIC:
-            print("player collided with a " + str(type(other)))
+           or other.type == Entity.TYPE_ENEMY_DYNAMIC \
+           or other.type == Entity.TYPE_CHAMELEON:
             self.health -= other.damage
+            print("collided with enemy")
 
             if other.damage > 0:
                 if axis == 'y':
@@ -102,6 +118,11 @@ class Player(Entity):
             self.animation = Player.ANIM_RIGHT
         else:
             self.velocity.x = 0
+            if self.animation == Player.ANIM_LEFT \
+               or self.animation == Player.ANIM_IDLE_LEFT:
+                self.animation = Player.ANIM_IDLE_LEFT
+            else:
+                self.animation = Player.ANIM_IDLE_RIGHT
 
         if input_m.up:
             if self.can_jump:
@@ -110,13 +131,13 @@ class Player(Entity):
                 self.velocity.y = -self.VEL_JUMP
 
         if input_m.z and self.shot_cooldown <= 0:
-            bullet_position = pygame.math.Vector2(self.position.x, self.position.y + 26)
+            bullet_position = pygame.math.Vector2(self.position.x, self.position.y + 52)
             bullet_direction = pygame.math.Vector2(0, 0)
-            if self.animation == Player.ANIM_RIGHT:
-                bullet_position.x += 4 * 26
+            if self.animation == Player.ANIM_RIGHT \
+               or self.animation == Player.ANIM_IDLE_RIGHT:
+                bullet_position.x += 2.5 * 26
                 bullet_direction.x = Player.VEL_BULLET
             else:
-                bullet_position.x -= 26
                 bullet_direction.x = -Player.VEL_BULLET
 
             entities.append(PlayerBullet(bullet_position, bullet_direction))
@@ -124,7 +145,8 @@ class Player(Entity):
 
         if input_m.x and self.teeth_cooldown <= 0:
             teeth_position = pygame.math.Vector2(self.position.x, self.position.y + 26)
-            if self.animation == Player.ANIM_RIGHT:
+            if self.animation == Player.ANIM_RIGHT \
+               or self.animation == Player.ANIM_IDLE_RIGHT:
                 teeth_position.x += 3 * 26
             else:
                 teeth_position.x -= 26
@@ -150,6 +172,7 @@ class PlayerBullet(Entity):
     VEL_BULLET = 500                                         
     ANIM_BULLET = Animation([pygame.image.load("mock/bullet.png")], 0)
     DMG_BULLET = 1
+    TIME_BULLET = 5000
 
     def __init__(self, position, velocity):
         self.animation = PlayerBullet.ANIM_BULLET
@@ -158,22 +181,35 @@ class PlayerBullet(Entity):
         self.type = Entity.TYPE_PLAYER_RANGED
         self.reset_collider()
         self.dead = False
+        self.time = 0
 
     def collide(self, other, axis, dt):
         other.take_damage(PlayerBullet.DMG_BULLET, self)
+        print("bullet hit a " + str(type(other)))
         self.dead = True
 
     def update_logic(self, input_m, entities, dt):
+        self.time += dt
+        if self.time > PlayerBullet.TIME_BULLET:
+            self.dead = True
         if self.dead:
             entities.remove(self)
 
 class PlayerTeeth(Entity):
-    ANIM_TEETH = Animation([pygame.image.load("mock/teeth.png")], 0)
+
     DURATION_TEETH = 100
+    ANIM_TEETH = Animation([
+        pygame.image.load("mock/shark-bite-1.png"),
+        pygame.image.load("mock/shark-bite-2.png"),
+        pygame.image.load("mock/shark-bite-3.png"),
+        pygame.image.load("mock/shark-bite-4.png"),
+        ], DURATION_TEETH / 4)
     DMG_TEETH = 1
 
     def __init__(self, position):
         self.animation = PlayerTeeth.ANIM_TEETH
+        self.animation.frame_number = 0
+        self.animation.current_time = 0
         self.position = position
         self.velocity = pygame.math.Vector2()
         self.type = Entity.TYPE_PLAYER_MELEE

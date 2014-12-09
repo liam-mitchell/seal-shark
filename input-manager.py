@@ -28,6 +28,8 @@ class InputManager(object):
                     self.z = True
                 elif event.key == K.x:
                     self.x = True
+                elif event.key == K.r:
+                    raise ResetLevelException()
 
             elif event.type == KEYUP:
                 if event.key == K_RIGHT:

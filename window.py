@@ -9,7 +9,7 @@ class Window(object):
     VEL_LEVEL2 = pygame.math.Vector2(-Player.VEL_LEFTRIGHT,
                                      0)
     VEL_LEVEL2_UP = pygame.math.Vector2(0, Player.VEL_LEFTRIGHT)
-    TIME_LEVEL2_WAIT = 5000
+    TIME_LEVEL2_WAIT = 10000
     BG_LEVEL1 = pygame.image.load("mock/level1-background.png")
     BG_LEVEL2 = pygame.image.load("mock/level2-background.png")
     # Responsible for drawing objects and background on the screen
@@ -105,27 +105,35 @@ class Window(object):
             pygame.display.update()
             time += dt
 
+        self.enter_level2()
+
+    def enter_level2(self):
         self.background = pygame.image.load("mock/level2-background.png")
-        self.velocity = Window.VEL_LEVEL2
+        self.velocity = pygame.math.Vector2(Window.VEL_LEVEL2)
         self.level = Window.LEVEL2
         self.camera = pygame.math.Vector2(0, -780)
+        self.idle_time = 0
+        self.idle = False
 
     def move(self, dt):
         self.camera = self.camera + pygame.math.Vector2(self.velocity.x * dt / 1000,
                                                         self.velocity.y * dt / 1000)
-        print("camera now: (" + str(self.camera.x) + ", " + str(self.camera.y))
-        if self.camera.x < -(3276 - 1080) and self.level == Window.LEVEL2:
+        if self.camera.x < -(3276 - 1080) and self.level == Window.LEVEL2 \
+           and self.velocity.x != 0:
             self.velocity.x = 0
-            self.camera.x = -(3276 - 1080)
             self.idle = True
 
         if self.camera.y > 0 and self.level == Window.LEVEL2:
             self.camera.y = 0
             self.velocity.y = 0
 
-        if self.idle:
+        if self.level == Window.LEVEL2 and self.velocity.y == 0 \
+           and self.camera.y != 0 and self.velocity.x == 0:
+            print("idling camera idle_time: " + str(self.idle_time)
+                  + " wait time: " + str(Window.TIME_LEVEL2_WAIT))
             self.idle_time += dt
             if self.idle_time > Window.TIME_LEVEL2_WAIT:
+                print("stopping idling")
                 self.idle = False
                 self.velocity = Window.VEL_LEVEL2_UP
 ##            self.time += dt

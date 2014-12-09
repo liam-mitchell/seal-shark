@@ -41,23 +41,41 @@ class FireTrigger(ShutdownTrigger):
     FIRE_ON_TIME = 500
     FIRE_OFF_TIME = 750
 
+    ANIM_GLOWY = Animation([
+        pygame.image.load("mock/stove-glowy.png"),
+        pygame.image.load("mock/stove-glowy-2.png"),
+        pygame.image.load("mock/stove-glowy-3.png"),
+        ],
+                           FIRE_OFF_TIME / 3)
+    ANIM_FIRE = Animation([
+        pygame.image.load("mock/stove-fire.png"),
+        pygame.image.load("mock/stove-fire-2.png"),
+        ],
+                          FIRE_ON_TIME / 2)
+
     def __init__(self, image_path, position, entities):
         self.entities = entities
         self.fire = [
             StaticEnemy("mock/stove-fire.png",
-                        pygame.math.Vector2(20 * 26, 22 * 26 - 1)),
+                        pygame.math.Vector2(20 * 26, 22 * 26 - 1), 1,
+                        FireTrigger.ANIM_FIRE),
             StaticEnemy("mock/stove-fire.png",
-                        pygame.math.Vector2(14 * 26, 22 * 26 - 1)),
+                        pygame.math.Vector2(14 * 26, 22 * 26 - 1), 1,
+                        FireTrigger.ANIM_FIRE),
             StaticEnemy("mock/stove-fire.png",
-                        pygame.math.Vector2(17 * 26, 22 * 26 - 1)),
+                        pygame.math.Vector2(17 * 26, 22 * 26 - 1), 1,
+                        FireTrigger.ANIM_FIRE),
             ]
         self.glowies = [
             StaticEnemy("mock/stove-glowy.png",
-                        pygame.math.Vector2(20 * 26, 25 * 26 - 1)),
+                        pygame.math.Vector2(20 * 26, 25 * 26 - 1), 1,
+                        FireTrigger.ANIM_GLOWY),
             StaticEnemy("mock/stove-glowy.png",
-                        pygame.math.Vector2(14 * 26, 25 * 26 - 1)),
+                        pygame.math.Vector2(14 * 26, 25 * 26 - 1), 1,
+                        FireTrigger.ANIM_GLOWY),
             StaticEnemy("mock/stove-glowy.png",
-                        pygame.math.Vector2(17 * 26, 25 * 26 - 1)),
+                        pygame.math.Vector2(17 * 26, 25 * 26 - 1), 1,
+                        FireTrigger.ANIM_GLOWY),
             ]
 
         self.position = position
@@ -121,6 +139,8 @@ class FireTrigger(ShutdownTrigger):
     def turn_off(self, entity):
         if entity in self.entities:
             self.entities.remove(entity)
+            entity.animation.current_time = 0
+            entity.animation.frame_number = 0
 
     def die(self):
         self.dead = True

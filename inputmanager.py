@@ -1,6 +1,8 @@
 import pygame
 from pygame.locals import *
 
+from newlevel import ResetLevelException
+
 class InputManager(object):
     def __init__(self):
         self.left = False
@@ -28,6 +30,8 @@ class InputManager(object):
                     self.z = True
                 elif event.key == K_x:
                     self.x = True
+                elif event.key == K_r:
+                    raise ResetLevelException()
 
             elif event.type == KEYUP:
                 if event.key == K_RIGHT:

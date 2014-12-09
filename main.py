@@ -1,12 +1,16 @@
+import pygame._view
+
 import pygame
 from pygame.locals import *
 
-from block import Block, BreakableBlock
+from animation import Animation, PlayOnceAnimation
+from block import Block, BreakableBlock, TimedBlock
+from chameleon import Chameleon
 from chester import Chester
 from rotatorblock import RotatorBlock
 from inputmanager import InputManager
 from logic import LogicManager
-from newlevel import NewLevelException
+from newlevel import NewLevelException, ResetLevelException
 from physics import PhysicsEngine
 from piston import Piston
 from player import Player
@@ -39,8 +43,15 @@ def spawn_entities_level_one():
         Potion("mock/potion.png", pygame.math.Vector2(27 * 26, 28 * 26 - 13)),
         ]
 
+    laser = StaticEnemy("mock/laser.png", pygame.math.Vector2(26, 285))
+    laser.animation = Animation([
+        pygame.image.load("mock/laser.png"),
+        pygame.image.load("mock/laser-2.png"),
+        pygame.image.load("mock/laser-3.png"),
+        ],
+                                100)
     entities.append(ShutdownTrigger("mock/trigger.png", pygame.math.Vector2(0, 208),
-                                    StaticEnemy("mock/laser.png", pygame.math.Vector2(26, 285)),
+                                    laser,
                                     entities))
     entities.append(FireTrigger("mock/trigger-left.png",
                                 pygame.math.Vector2(14 * 26 - 13, 28 * 26),
@@ -69,13 +80,72 @@ def spawn_entities_level_one():
     entities.append(rotator_right)
     entities.append(rotator_bottom)
 
+    doctor_animation = PlayOnceAnimation([
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-man.png"),
+        pygame.image.load("mock/doctor-drink-2.png"),
+        pygame.image.load("mock/doctor-drink-3.png"),
+        pygame.image.load("mock/doctor-drink-4.png"),
+        pygame.image.load("mock/doctor-drink-5.png"),
+        pygame.image.load("mock/doctor-drink-6.png"),
+        pygame.image.load("mock/box-trans-3.png"),
+        ],
+                                 100)
+    doctor = TimedBlock(doctor_animation, pygame.math.Vector2(25 * 26, 26 * 26), 10000)
+    
+    entities.append(doctor)
+
     return entities
 
 def spawn_entities_level_two():
     entities = [
-        Player("mock/shark-right.png", pygame.math.Vector2(900, 30 * 26)),
+        Player("mock/shark-right.png", pygame.math.Vector2(800, 50 * 26)),
         Block("mock/level2-floor.png", pygame.math.Vector2(0, 59 * 26)),
+        Block("mock/box-level2.png", pygame.math.Vector2(624, 1486)),
+        Block("mock/box2-level2.png", pygame.math.Vector2(858, 1486)),
+        Block("mock/box-level2.png", pygame.math.Vector2(1040, 1486)),
+        Block("mock/box3-level2.png", pygame.math.Vector2(1040, 1434)),
+        Block("mock/box-level2.png", pygame.math.Vector2(1350, 1486)),
+        Block("mock/box2-level2.png", pygame.math.Vector2(1586, 1486)),
+        Block("mock/box3-level2.png", pygame.math.Vector2(1586, 1408)),
+        Block("mock/box3-level2.png", pygame.math.Vector2(1586, 1330)),
+        Block("mock/box2-level2.png", pygame.math.Vector2(1742, 1486)),
+        Block("mock/box-level2.png", pygame.math.Vector2(1742, 1408)),
+        Block("mock/box3-level2.png", pygame.math.Vector2(1742, 1330)),
+        Block("mock/box2-level2.png", pygame.math.Vector2(1534, 1408)),
+        Block("mock/box3-level2.png", pygame.math.Vector2(1508, 1486)),
+        Block("mock/box-level2.png", pygame.math.Vector2(2054, 1486)),
+        Block("mock/box-level2.png", pygame.math.Vector2(2288, 1382)),
         BreakableBlock("mock/beaker.png", pygame.math.Vector2(1260, 700 + 30 * 26)),
+        BreakableBlock("mock/beaker.png", pygame.math.Vector2(1350, 1408)),
+        BreakableBlock("mock/beaker.png", pygame.math.Vector2(1350, 1330)),
+        BreakableBlock("mock/beaker.png", pygame.math.Vector2(2054, 1408)),
+        BreakableBlock("mock/beaker.png", pygame.math.Vector2(2288, 1460)),
         Block("mock/tree-platform.png", pygame.math.Vector2(3276 - 10 * 26, 1560 - 3 * 26)),
         Block("mock/tree-platform.png", pygame.math.Vector2(3276 - 7 * 26, 1560 - 6 * 26)),
         Block("mock/tree-platform.png", pygame.math.Vector2(3276 - 6 * 26, 1560 - 9 * 26)),
@@ -95,8 +165,16 @@ def spawn_entities_level_two():
         Block("mock/tree-platform.png", pygame.math.Vector2(3276 - 17 * 26, 1560 - 45 * 26)),
         Block("mock/tree-platform.png", pygame.math.Vector2(3276 - 19 * 26, 1560 - 44 * 26)),
         Block("mock/tree-platform.png", pygame.math.Vector2(3276 - 12 * 26, 1560 - 36 * 26)),
-        Block("mock/box-trans-14.png", pygame.math.Vector2(3276 - 36 * 26, 1560 - 42 * 26)),
+        Block("mock/box-trans-14.png", pygame.math.Vector2(3276 - 36 * 26, 1565 - 42 * 26)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(1196, 1512)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(1235, 1512)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(1660, 1512)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(1699, 1512)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(2522, 1512)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(2678, 1512)),
+        StaticEnemy("mock/screw.png", pygame.math.Vector2(2834, 1512)),
         Chester("mock/chester.png"),
+        Chameleon("mock/chameleon.png", pygame.math.Vector2(2350 + 3 * 26, 418)),
         ]
 
     return entities
@@ -112,14 +190,13 @@ def main():
     clock = pygame.time.Clock()
     entities = spawn_entities_level_one()
     running = True
+    level = 1
 
     while(running):
-        running = input_m.update()
-
-        clock.tick()
-        dt = clock.get_time()
-
         try:
+            running = input_m.update()
+            clock.tick()
+            dt = clock.get_time()
             logic.update(entities, input_m, dt)
             physics.update(entities, dt)
             window.render(entities, dt)
@@ -128,6 +205,14 @@ def main():
                                 pygame.Rect(650, 480, 100, 100),
                                 3000)
             entities = spawn_entities_level_two()
+            level = 2
+        except ResetLevelException:
+            if level == 2:
+                entities = spawn_entities_level_two()
+                window.enter_level2()
+            else:
+                entities = spawn_entities_level_one()
+            
 
 if __name__ == "__main__":
     main()

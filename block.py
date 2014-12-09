@@ -30,3 +30,18 @@ class BreakableBlock(Block):
     def update_logic(self, input_m, entities, dt):
         if self.dead:
             entities.remove(self)
+
+class TimedBlock(Block):
+    def __init__(self, animation, position, time):
+        self.time = time
+        self.current_time = 0
+        self.animation = animation
+        self.type = Entity.TYPE_OBJECT
+        self.position = position
+        self.velocity = pygame.math.Vector2()
+        self.reset_collider()
+
+    def update_logic(self, input_m, entities, dt):
+        self.current_time += dt
+        if self.current_time > self.time and self in entities:
+            entities.remove(self)

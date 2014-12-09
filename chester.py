@@ -5,14 +5,16 @@ from entity import Entity
 from player import Player
 
 class Chester(Entity):
-
     def __init__(self, image_path):
         self.type = Entity.TYPE_ENEMY_DYNAMIC
         self.animation = Animation([
-            pygame.image.load(image_path)
+            pygame.image.load("mock/chester-1.png"),
+            pygame.image.load("mock/chester-2.png"),
+            pygame.image.load("mock/chester-3.png"),
+            pygame.image.load("mock/chester-4.png"),
             ],
-                                   0)
-        self.position = pygame.math.Vector2(0, 780 - 5 * 26)
+                                   100)
+        self.position = pygame.math.Vector2(0, 1560 - 9 * 26)
         self.velocity = pygame.math.Vector2(Player.VEL_LEFTRIGHT, 0)
         self.damage = 3
         self.reset_collider()
@@ -21,6 +23,11 @@ class Chester(Entity):
         other.take_damage(self.damage, self)
 
     def update_logic(self, input_m, entities, dt):
-        print("chester updatin' at " +
-              str(self.position.x) + ", "
-              + str(self.position.y) + ")")
+        if self.position.x > 2900:
+            self.velocity.x = 0
+            if len(self.animation.frames) > 2:
+                self.animation = Animation([
+                    pygame.image.load("mock/chester-tired-1.png"),
+                    pygame.image.load("mock/chester-tired-2.png"),
+                    ],
+                                           500)

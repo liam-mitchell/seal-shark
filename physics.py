@@ -16,7 +16,8 @@ class PhysicsEngine(object):
             self.step(e, dt, entities)
 
     def add_gravity(self, entity, dt):
-        if entity.type == Entity.TYPE_PLAYER:
+        if entity.type == Entity.TYPE_PLAYER \
+           or entity.type == Entity.TYPE_CHAMELEON:
             entity.velocity.y += self.ACCEL_GRAVITY * dt / 1000
 
     def step(self, entity, dt, entities):
@@ -26,11 +27,6 @@ class PhysicsEngine(object):
             entity.reset_collider()
             self.step_x(entity, dt, entities)
             entity.reset_collider()
-            if entity.type == Entity.TYPE_PLAYER:
-                print("player at (" + str(entity.position.x)
-                      + ", " + str(entity.position.y) + ") vel ("
-                      + str(entity.velocity.x) + ", "
-                      + str(entity.velocity.y) + ")")
 
     def step_y(self, entity, dt, entities):
         delta = entity.velocity.y * dt / 1000

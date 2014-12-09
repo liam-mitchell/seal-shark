@@ -24,3 +24,24 @@ class Animation(object):
                 self.frame_number = 0
 
         return self.frames[self.frame_number]
+
+
+class PlayOnceAnimation(Animation):
+    def __init__(self, frames, frame_duration):
+        Animation.__init__(self, frames, frame_duration)
+
+    def next_frame(self, dt):
+        if self.frame_number == len(self.frames) - 1:
+            self.frame_duration = 0
+
+        if self.frame_duration == 0:
+            return self.frames[len(self.frames) - 1]
+
+        self.current_time += dt
+        if self.current_time > self.frame_duration:
+            self.frame_number += 1
+            self.current_time = 0
+            if self.frame_number == len(self.frames):
+                self.frame_number = 0
+
+        return self.frames[self.frame_number]

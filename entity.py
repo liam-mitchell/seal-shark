@@ -9,6 +9,7 @@ class Entity(object):
     TYPE_PLAYER_MELEE = 5
     TYPE_PLAYER_RANGED = 6
     TYPE_POTION = 7
+    TYPE_CHAMELEON = 8
 
     # Parent class of all entities in the game
     #
