@@ -31,7 +31,7 @@ def spawn_entities_level_one():
         Block("mock/box1x3.png", pygame.math.Vector2(598, 233)),
         Block("mock/box2x1.png", pygame.math.Vector2(0, 9 * 26 - 1)),
         Block("mock/box1x3.png", pygame.math.Vector2(0, 2 * 26 - 1)),
-        Block("mock/box-window.png", pygame.math.Vector2(130, 208)),
+        Block("mock/box-window.png", pygame.math.Vector2(131, 205)),
         Block("mock/bottom-floor.png", pygame.math.Vector2(0, 29 * 26 - 1)),
         Block("mock/box-trans-3.png", pygame.math.Vector2(17 * 26, 22 * 26 - 1)),
         Block("mock/box-trans-3.png", pygame.math.Vector2(10 * 26, 22 * 26 - 1)),
@@ -39,7 +39,7 @@ def spawn_entities_level_one():
         StaticEnemy("mock/coil.png", pygame.math.Vector2(16 * 26 - 13, 19 * 26 - 1), 1),
         Block("mock/stove.png", pygame.math.Vector2(14 * 26, 25 * 26 - 1)),
         Piston("mock/piston.png", pygame.math.Vector2(338, 104)),
-        Potion("mock/potion.png", pygame.math.Vector2(832, 140)),
+        #Potion("mock/potion.png", pygame.math.Vector2(832, 140)),
         Potion("mock/potion.png", pygame.math.Vector2(27 * 26, 28 * 26 - 13)),
         ]
 
